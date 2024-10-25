@@ -12,7 +12,7 @@ func TestRender(t *testing.T) {
 		template string
 		values   map[string]interface{}
 		expected string
-		sources  []string
+		sources  map[string]DataSource
 		err      string
 	}
 
@@ -23,7 +23,7 @@ func TestRender(t *testing.T) {
 		template: `{{ "hello" | toUpper }}`,
 		values:   map[string]interface{}{},
 		expected: "HELLO",
-		sources:  []string{},
+		sources:  map[string]DataSource{},
 		err:      "",
 	})
 
