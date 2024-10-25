@@ -1,24 +1,26 @@
 package templates
 
 import (
+	"bytes"
 	"context"
-	"fmt"
-	"os"
+
+	"github.com/hairyhenderson/gomplate/v4"
 )
 
 func Render(template string, values map[string]interface{}, sources []string) (output string, err error) {
 	ctx := context.Background()
 
-	// create a new template renderer
-	tr := NewRenderer(RenderOptions{})
+	options := gomplate.RenderOptions{}
 
-	// render a template to stdout
-	err := tr.Render(ctx, "mytemplate",
-		`{{ "hello, world!" | toUpper }}`,
-		os.Stdout)
+	tr := gomplate.NewRenderer(options)
+
+	buffer := new(bytes.Buffer)
+	err = tr.Render(ctx, "template", template, buffer)
 	if err != nil {
-		fmt.Println("gomplate error:", err)
+		return
 	}
+
+	output = buffer.String()
 
 	return
 }
