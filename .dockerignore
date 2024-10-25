@@ -1,0 +1,7 @@
+.devcontainer
+.git
+.github
+.dockerignore
+.gitignore
+LICENSE
+README.md
