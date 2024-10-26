@@ -20,11 +20,12 @@ func GetRootDirectory() (string, error) {
 			return currentDir, nil
 		}
 
-		if currentDir == filepath.Dir(currentDir) {
+		parentDir := filepath.Dir(currentDir)
+		if currentDir == parentDir {
 			break
 		}
 
-		currentDir = filepath.Dir(currentDir)
+		currentDir = parentDir
 	}
 
 	// File not found
