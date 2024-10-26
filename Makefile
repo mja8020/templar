@@ -17,3 +17,4 @@ build:
 	GOOS=darwin; GOARCH=arm64;  go build -o bin/templar-$$GOOS-$$GOARCH
 	GOOS=linux; GOARCH=amd64;   go build -o bin/templar-$$GOOS-$$GOARCH
 	GOOS=windows; GOARCH=amd64; go build -o bin/templar-$$GOOS-$$GOARCH.exe
+	GOOS=windows; GOARCH=arm64; go build -o bin/templar-$$GOOS-$$GOARCH.exe
