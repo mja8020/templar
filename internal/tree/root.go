@@ -1,4 +1,4 @@
-package utils
+package tree
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 )
 
-func GetRootDirectory() (string, error) {
+func getRootDirectory() (string, error) {
 	currentDir, err := os.Getwd()
 	if err != nil {
 		return "", fmt.Errorf("error getting current directory: %w", err)
