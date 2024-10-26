@@ -16,7 +16,7 @@ func TestGetRootDirectory(t *testing.T) {
 	// Create a temporary directory for testing
 	tempDir, err := ioutil.TempDir("", "testrootdir")
 	require.NoError(t, err)
-	defer os.RemoveAll(tempDir) // Clean up the temporary directory afterward
+	defer os.RemoveAll(tempDir)
 
 	// Create a nested directory structure
 	nestedDir := filepath.Join(tempDir, "nested", "deeper")
@@ -26,7 +26,7 @@ func TestGetRootDirectory(t *testing.T) {
 	// Set up test cases
 	testCases := []struct {
 		name           string
-		setup          func() string // function to set up the environment
+		setup          func() string
 		expectedOutput string
 		expectedError  string
 	}{
@@ -35,7 +35,7 @@ func TestGetRootDirectory(t *testing.T) {
 			setup: func() string {
 				// Create the templar.yaml file in the nested directory
 				filePath := filepath.Join(nestedDir, "templar.yaml")
-				ioutil.WriteFile(filePath, []byte("content"), 0o644)
+				os.WriteFile(filePath, []byte("content"), 0o644)
 				return nestedDir
 			},
 			expectedOutput: nestedDir,
@@ -44,13 +44,13 @@ func TestGetRootDirectory(t *testing.T) {
 		{
 			name: "File in parent directory",
 			setup: func() string {
-				// Create the templar.yaml file in the parent directory
-				parentDir := filepath.Dir(nestedDir) // This should be "nested"
+				// Create the templar.yaml file in the parent directory ("nested")
+				parentDir := filepath.Dir(nestedDir)
 				filePath := filepath.Join(parentDir, "templar.yaml")
-				ioutil.WriteFile(filePath, []byte("content"), 0o644)
-				return nestedDir // Start from the deeper directory
+				os.WriteFile(filePath, []byte("content"), 0o644)
+				return nestedDir
 			},
-			expectedOutput: filepath.Dir(nestedDir), // Expect the parent directory
+			expectedOutput: filepath.Dir(nestedDir),
 			expectedError:  "",
 		},
 		{
@@ -76,17 +76,15 @@ func TestGetRootDirectory(t *testing.T) {
 			// Call the function
 			result, err := utils.GetRootDirectory()
 
-			// Normalize the paths
-			normalizedResult, err1 := filepath.EvalSymlinks(result)
-			require.NoError(t, err1)
+			// Clean up by removing the templar.yaml file if it exists
+			for _, dir := range []string{nestedDir, filepath.Dir(nestedDir)} {
+				filePath := filepath.Join(dir, "templar.yaml")
+				os.Remove(filePath) // Ignore errors here as the file might not exist
+			}
 
-			normalizedExpected, err2 := filepath.EvalSymlinks(tc.expectedOutput)
-			require.NoError(t, err2)
-
-			// Assert the output
 			if tc.expectedError == "" {
 				assert.NoError(t, err)
-				assert.Equal(t, normalizedExpected, normalizedResult)
+				assert.Equal(t, tc.expectedOutput, result)
 			} else {
 				assert.Error(t, err)
 				assert.Contains(t, err.Error(), tc.expectedError)
