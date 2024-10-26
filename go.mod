@@ -1,4 +1,4 @@
-module github.com/mjbyter/templar
+module github.com/mja8020/templar
 
 go 1.23.2
 
