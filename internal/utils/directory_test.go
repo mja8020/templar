@@ -1,11 +1,10 @@
-package main
+package utils
 
 import (
 	"os"
 	"path/filepath"
 	"testing"
 
-	"github.com/mja8020/templar/utils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -20,6 +19,11 @@ func TestGetRootDirectory(t *testing.T) {
 	// Create a nested directory structure
 	nestedDir := filepath.Join(tempDir, "nested", "deeper")
 	err = os.MkdirAll(nestedDir, os.ModePerm)
+	require.NoError(t, err)
+
+	// Resolve symlinks for nestedDir
+	// This allows tests to run on native osx, as /tmp links to /private/tmp
+	nestedDir, err = filepath.EvalSymlinks(nestedDir)
 	require.NoError(t, err)
 
 	// Set up test cases
@@ -73,7 +77,7 @@ func TestGetRootDirectory(t *testing.T) {
 			require.NoError(t, err)
 
 			// Call the function
-			result, err := utils.GetRootDirectory()
+			result, err := GetRootDirectory()
 
 			// Clean up by removing the templar.yaml file if it exists
 			for _, dir := range []string{nestedDir, filepath.Dir(nestedDir)} {
