@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"github.com/hairyhenderson/gomplate/v4"
-	"github.com/mjbyter/templar/utils"
+	"github.com/mja8020/templar/utils"
 )
 
 // Datasource - External URL to pull data from, see https://docs.gomplate.ca/datasources/
