@@ -5,7 +5,11 @@ go 1.23.2
 // Temporary while using the fork
 replace github.com/hairyhenderson/gomplate/v4 v4.1.0 => github.com/mja8020/gomplate/v4 v4.0.0
 
-require github.com/spf13/cobra v1.8.1
+require (
+	github.com/hairyhenderson/gomplate/v4 v4.1.0
+	github.com/spf13/cobra v1.8.1
+	github.com/stretchr/testify v1.9.0
+)
 
 require (
 	cloud.google.com/go v0.115.0 // indirect
@@ -78,7 +82,6 @@ require (
 	github.com/hack-pad/hackpadfs v0.2.4 // indirect
 	github.com/hairyhenderson/go-fsimpl v0.1.7 // indirect
 	github.com/hairyhenderson/go-git/v5 v5.12.1-0.20240530140403-1b868a7b8a3c // indirect
-	github.com/hairyhenderson/gomplate/v4 v4.1.0 // indirect
 	github.com/hairyhenderson/toml v0.4.2-0.20210923231440-40456b8e66cf // indirect
 	github.com/hairyhenderson/xignore v0.3.3-0.20230403012150-95fe86932830 // indirect
 	github.com/hairyhenderson/yaml v0.0.0-20220618171115-2d35fca545ce // indirect
@@ -122,7 +125,6 @@ require (
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
 	github.com/skeema/knownhosts v1.2.2 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	go.opencensus.io v0.24.0 // indirect
