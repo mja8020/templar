@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -14,7 +13,7 @@ import (
 // TestGetRootDirectory tests the GetRootDirectory function
 func TestGetRootDirectory(t *testing.T) {
 	// Create a temporary directory for testing
-	tempDir, err := ioutil.TempDir("", "testrootdir")
+	tempDir, err := os.MkdirTemp("", "testrootdir")
 	require.NoError(t, err)
 	defer os.RemoveAll(tempDir)
 
