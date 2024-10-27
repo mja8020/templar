@@ -21,7 +21,7 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
 		if len(args) == 0 {
-			return fmt.Errorf("At least one command to run must be specified")
+			return fmt.Errorf("At least one command must be specified")
 		}
 
 		fmt.Println("run called")
