@@ -72,12 +72,8 @@ func TestGetRootDirectory(t *testing.T) {
 			// Set up the environment for the test case
 			startDir := tc.setup()
 
-			// Change to the start directory
-			err := os.Chdir(startDir)
-			require.NoError(t, err)
-
 			// Call the function
-			result, err := getRootDirectory()
+			result, err := getRootDirectory(startDir)
 
 			// Clean up by removing the templar.yaml file if it exists
 			for _, dir := range []string{nestedDir, filepath.Dir(nestedDir)} {
