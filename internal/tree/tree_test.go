@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestRecursePath(t *testing.T) {
+func TestNewTree(t *testing.T) {
 
 	badPath, err := os.MkdirTemp("", "badPath")
 	require.NoError(t, err)
