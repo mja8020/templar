@@ -45,7 +45,8 @@
                 },
                 "remote.extensionKind": {
                     "ms-azuretools.vscode-docker": "workspace"
-                }
+                },
+                "dev.containers.copyGitConfig": true
             }
         }
     }
