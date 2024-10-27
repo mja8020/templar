@@ -22,10 +22,7 @@ func TestRender(t *testing.T) {
 	fixtures = append(fixtures, fixture{
 		name:     "upper",
 		template: `{{ "hello" | toUpper }}`,
-		values:   map[string]interface{}{},
 		expected: "HELLO",
-		sources:  map[string]DataSource{},
-		err:      "",
 	})
 
 	fixtures = append(fixtures, fixture{
@@ -35,8 +32,6 @@ func TestRender(t *testing.T) {
 			"FOO": "bar",
 		},
 		expected: "bar",
-		sources:  map[string]DataSource{},
-		err:      "",
 	})
 
 	fixtures = append(fixtures, fixture{
@@ -46,17 +41,26 @@ func TestRender(t *testing.T) {
 			"FOO": "bar",
 		},
 		expected: "BAR",
-		sources:  map[string]DataSource{},
-		err:      "",
 	})
 
 	fixtures = append(fixtures, fixture{
 		name:     "error",
 		template: `{{ !!!!! }}`,
-		values:   map[string]interface{}{},
 		expected: "",
-		sources:  map[string]DataSource{},
 		err:      "unexpected",
+	})
+
+	// Confirm sprig is loaded
+	fixtures = append(fixtures, fixture{
+		name:     "sprig-add",
+		template: `{{ add 1 2 3 }}`,
+		expected: "6",
+	})
+
+	fixtures = append(fixtures, fixture{
+		name:     "sprig-trim",
+		template: `{{ trim "   hello    " }}`,
+		expected: "hello",
 	})
 
 	for _, fixture := range fixtures {
