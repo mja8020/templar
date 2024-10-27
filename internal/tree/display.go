@@ -1,5 +1,9 @@
 package tree
 
+// Display the tree much like the output of "tree" command
+//
+// TODO: Print rendered variables alongside the paths in the tree once rendering is implemented
+
 func (t *Tree) Display() (display string) {
 	display = "\n" + t.root.Name + "\n" + displayNode(t.root, "")
 	return
