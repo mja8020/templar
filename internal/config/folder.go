@@ -4,6 +4,7 @@ import "github.com/mja8020/templar/internal/templates"
 
 // Maybe project?
 type Folder struct {
+	Path        string                          `yaml:"-"` // Full path
 	Values      map[string]interface{}          `yaml:"values,omitempty"`
 	DataSources map[string]templates.DataSource `yaml:"datasources,omitempty"`
 	Commands    map[string]Command              `yaml:"commands,omitempty"`
