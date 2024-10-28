@@ -9,16 +9,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type renderCmdFlags struct {
-	check bool
-}
-
-var RenderCmdFlags renderCmdFlags
-
-// renderCmd represents the render command
-var renderCmd = &cobra.Command{
-	Use:   "render",
-	Short: "Renders/Checks template content",
+// runCmd represents the run command
+var runCmd = &cobra.Command{
+	Use:   "run",
+	Short: "Runs pre-configured commands against the target folders.",
 	Long: `A longer description that spans multiple lines and likely contains examples
 and usage of using your command. For example:
 
@@ -26,13 +20,15 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	RunE: func(cmd *cobra.Command, args []string) (err error) {
-		fmt.Println("render called")
+		if len(args) == 0 {
+			return fmt.Errorf("At least one command must be specified")
+		}
+
+		fmt.Println("run called")
 		return
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(renderCmd)
-
-	renderCmd.PersistentFlags().BoolVarP(&RenderCmdFlags.check, "check", "c", false, "Checks the rendered templates without saving and returns non-zero exit code for pending changes")
+	rootCmd.AddCommand(runCmd)
 }

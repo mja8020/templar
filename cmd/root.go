@@ -18,7 +18,7 @@ var RootCmdFlags rootCmdFlags
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "templar",
-	Short: "A brief description of your application",
+	Short: "Template generator",
 	Long: `A longer description that spans multiple lines and likely contains
 examples and usage of using your application. For example:
 
@@ -47,5 +47,5 @@ func init() {
 
 	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.templar.yaml)")
 
-	rootCmd.PersistentFlags().StringVarP(&RootCmdFlags.target, "target", "t", "", "")
+	rootCmd.PersistentFlags().StringVarP(&RootCmdFlags.target, "target", "t", "./", "Target folder within a stack")
 }
