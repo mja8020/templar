@@ -14,6 +14,7 @@ var (
 	executable string
 	envVars    map[string]string
 	args       []string
+	stream     bool
 )
 
 // execCmd is the execute command for Cobra
@@ -22,7 +23,7 @@ var execCmd = &cobra.Command{
 	Short: "Execute a command with specified environment variables and arguments",
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		// Call the Exec function from internal/exec package
-		result, err := exec.Run(executable, envVars, args)
+		result, err := exec.Run(executable, envVars, args, stream)
 		if err != nil {
 			return fmt.Errorf("execution failed: %w", err)
 		}
@@ -42,6 +43,7 @@ func init() {
 	execCmd.Flags().StringVarP(&executable, "executable", "e", "/bin/bash", "Path to the executable")
 	execCmd.Flags().StringToStringVarP(&envVars, "env", "v", nil, "Environment variables (key=value)")
 	execCmd.Flags().StringArrayVarP(&args, "args", "a", nil, "Arguments to pass to the executable")
+	execCmd.Flags().BoolVarP(&stream, "stream", "s", false, "Boolean to turn on stream from stdout")
 
 	// Here you will define your flags and configuration settings.
 

@@ -24,7 +24,7 @@ func isExecutable(path string) bool {
 	return info.Mode()&0111 != 0 // Check for any executable bit
 }
 
-func Run(executable string, environment map[string]string, args []string) (Execute, error) {
+func Run(executable string, environment map[string]string, args []string, stream bool) (Execute, error) {
 	var result Execute
 
 	execPath, err := exec.LookPath(executable)
@@ -72,27 +72,29 @@ func Run(executable string, environment map[string]string, args []string) (Execu
 	// Channel to signal when output collection is done
 	done := make(chan struct{})
 
-	// Stream stdout
-	go func() {
-		scanner := bufio.NewScanner(stdoutPipe)
-		for scanner.Scan() {
-			line := scanner.Text()
-			fmt.Println(line)            // Print each line to stdout
-			result.StdOut += line + "\n" // Collect stdout output
-		}
-		done <- struct{}{}
-	}()
+	if stream != false {
+		// Stream stdout
+		go func() {
+			scanner := bufio.NewScanner(stdoutPipe)
+			for scanner.Scan() {
+				line := scanner.Text()
+				fmt.Println(line)            // Print each line to stdout
+				result.StdOut += line + "\n" // Collect stdout output
+			}
+			done <- struct{}{}
+		}()
 
-	// Stream stderr
-	go func() {
-		scanner := bufio.NewScanner(stderrPipe)
-		for scanner.Scan() {
-			line := scanner.Text()
-			fmt.Fprintln(os.Stderr, line) // Print each line to stderr
-			result.StdErr += line + "\n"  // Collect stderr output
-		}
-		done <- struct{}{}
-	}()
+		// Stream stderr
+		go func() {
+			scanner := bufio.NewScanner(stderrPipe)
+			for scanner.Scan() {
+				line := scanner.Text()
+				fmt.Fprintln(os.Stderr, line) // Print each line to stderr
+				result.StdErr += line + "\n"  // Collect stderr output
+			}
+			done <- struct{}{}
+		}()
+	}
 
 	// Wait for the command to finish
 	if err := cmd.Wait(); err != nil {
