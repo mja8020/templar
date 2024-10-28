@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 
+	"github.com/Masterminds/sprig/v3"
 	"github.com/hairyhenderson/gomplate/v4"
 	"github.com/mja8020/templar/internal/utils"
 )
@@ -16,8 +17,6 @@ type DataSource gomplate.DataSource
 
 // Render - Rendersa the template including any top level values and datasources
 func Render(template string, values map[string]interface{}, sources map[string]DataSource) (output string, err error) {
-	// TODO: Add functions from https://masterminds.github.io/sprig/
-
 	if values == nil {
 		values = map[string]interface{}{}
 	}
@@ -36,6 +35,7 @@ func Render(template string, values map[string]interface{}, sources map[string]D
 	ctx := context.Background()
 
 	options := gomplate.RenderOptions{}
+	options.Funcs = sprig.FuncMap()
 	options.MissingKey = "default" // Missing key behavior, see https://docs.gomplate.ca/usage/#--missing-key
 	// Idealy we fork or enhance gomplate so we are not writing a temp json file for an internal process
 	options.Context = map[string]gomplate.DataSource{
