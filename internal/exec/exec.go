@@ -2,7 +2,9 @@ package exec
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"runtime"
@@ -72,29 +74,24 @@ func Run(executable string, environment map[string]string, args []string, stream
 	// Channel to signal when output collection is done
 	done := make(chan struct{})
 
-	if stream != false {
-		// Stream stdout
-		go func() {
-			scanner := bufio.NewScanner(stdoutPipe)
-			for scanner.Scan() {
-				line := scanner.Text()
-				fmt.Println(line)            // Print each line to stdout
-				result.StdOut += line + "\n" // Collect stdout output
+	// Function to collect output quietly or stream it
+	collectOutput := func(pipe io.Reader, output *string) {
+		var buf bytes.Buffer
+		scanner := bufio.NewScanner(pipe)
+		for scanner.Scan() {
+			line := scanner.Text()
+			if stream {
+				fmt.Fprintln(os.Stdout, line) // Stream to stdout
 			}
-			done <- struct{}{}
-		}()
-
-		// Stream stderr
-		go func() {
-			scanner := bufio.NewScanner(stderrPipe)
-			for scanner.Scan() {
-				line := scanner.Text()
-				fmt.Fprintln(os.Stderr, line) // Print each line to stderr
-				result.StdErr += line + "\n"  // Collect stderr output
-			}
-			done <- struct{}{}
-		}()
+			buf.WriteString(line + "\n")
+		}
+		*output = buf.String()
+		done <- struct{}{}
 	}
+
+	// Collect stdout and stderr based on `stream` flag
+	go collectOutput(stdoutPipe, &result.StdOut)
+	go collectOutput(stderrPipe, &result.StdErr)
 
 	// Wait for the command to finish
 	if err := cmd.Wait(); err != nil {
