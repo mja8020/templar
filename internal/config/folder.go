@@ -23,3 +23,11 @@ type Command struct {
 type Template struct {
 	Content string `yaml:"content,omitempty"`
 }
+
+func NewFolder(path string) (folder Folder, err error) {
+	folder = Folder{}
+
+	// TODO
+
+	return
+}

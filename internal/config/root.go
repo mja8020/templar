@@ -43,16 +43,36 @@ func NewConfig(target string) (config Config, err error) {
 	config.TemplateFolder = ".templar"
 
 	config.Target = target
+	config.Layers = []Layer{}
+	config.Variables = map[string]Variable{}
 
-	config.Tree, err = tree.NewTree(target)
+	err = config.buildTree()
 	if err != nil {
 		return
 	}
-	config.Root = config.Tree.Root.Name
 
-	config.Layers = []Layer{}
-	config.Variables = map[string]Variable{}
-	config.Folders = map[string]Folder{}
+	err = config.buildFolders()
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (c *Config) buildTree() (err error) {
+	c.Tree, err = tree.NewTree(c.Target)
+	if err != nil {
+		return
+	}
+	c.Root = c.Tree.Root.Name
+
+	return
+}
+
+func (c *Config) buildFolders() (err error) {
+	c.Folders = map[string]Folder{}
+
+	// Start traversing the tree, load the config, merge etc
 
 	return
 }
