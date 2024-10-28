@@ -6,13 +6,14 @@ import "github.com/mja8020/templar/internal/tree"
 type Config struct {
 	// Entrypoint when running
 	Target string `yaml:"-"`
+	// Configuration root path
+	Root string `yaml:"-"`
 
-	// Settings only applicable in root
-	Layers    []Layer             `yaml:"layers,omitempty"`    // Layers are only defined in root, first is considered default
+	Layers    []Layer             `yaml:"layers,omitempty"`    // First is considered default
 	Variables map[string]Variable `yaml:"variables,omitempty"` // Optionally define what values to expect
 
 	// The tree structure of the folders
-	Tree *tree.Tree
+	Tree *tree.Tree `yaml:"-"`
 
 	// Details for the folders, key is folder name relative to root
 	Folders map[string]Folder `yaml:"folders,omitempty"`
@@ -34,9 +35,7 @@ type Layer struct {
 	Match  string   `yaml:"match,omitempty"` // Determines which layer is selected?
 }
 
-func NewConfig(target string) (
-	config Config, err error,
-) {
+func NewConfig(target string) (config Config, err error) {
 	config = Config{}
 
 	config.RootConfig = "templar.yaml"
@@ -49,6 +48,11 @@ func NewConfig(target string) (
 	if err != nil {
 		return
 	}
+	config.Root = config.Tree.Root.Name
+
+	config.Layers = []Layer{}
+	config.Variables = map[string]Variable{}
+	config.Folders = map[string]Folder{}
 
 	return
 }
