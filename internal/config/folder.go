@@ -12,7 +12,8 @@ type Folder struct {
 
 type Command struct {
 	Environment map[string]string `yaml:"environment,omitempty"` // Environment variables (values are templates)
-	Command     string            `yaml:"command,omitempty"`     // The comand to run i.e. terraform plan (values are templates)
+	Command     string            `yaml:"command,omitempty"`     // The comand to run i.e. terraform (values are templates)
+	Arguments   []string          `yaml:"arguments,omitempty"`   // The comand arguments (values are templates)
 	Success     []int             `yaml:"success,omitempty"`     // Exit codes that are considered successfull
 }
 
