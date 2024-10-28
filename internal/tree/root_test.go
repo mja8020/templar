@@ -77,7 +77,7 @@ func TestGetRootDirectory(t *testing.T) {
 			require.NoError(t, err)
 
 			// Call the function
-			result, err := getRootDirectory()
+			result, err := getRootDirectory("")
 
 			// Clean up by removing the templar.yaml file if it exists
 			for _, dir := range []string{nestedDir, filepath.Dir(nestedDir)} {

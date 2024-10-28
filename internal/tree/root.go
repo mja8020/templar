@@ -6,26 +6,29 @@ import (
 	"path/filepath"
 )
 
-func getRootDirectory() (string, error) {
-	currentDir, err := os.Getwd()
-	if err != nil {
-		return "", fmt.Errorf("error getting current directory: %w", err)
+func getRootDirectory(starting string) (string, error) {
+	if starting == "" {
+		currentDir, err := os.Getwd()
+		if err != nil {
+			return "", fmt.Errorf("error getting current directory: %w", err)
+		}
+		starting = currentDir
 	}
 
 	for {
-		filePath := filepath.Join(currentDir, "templar.yaml")
+		filePath := filepath.Join(starting, "templar.yaml")
 
 		// Check if the file exists
 		if _, err := os.Stat(filePath); err == nil {
-			return currentDir, nil
+			return starting, nil
 		}
 
-		parentDir := filepath.Dir(currentDir)
-		if currentDir == parentDir {
+		parentDir := filepath.Dir(starting)
+		if starting == parentDir {
 			break
 		}
 
-		currentDir = parentDir
+		starting = parentDir
 	}
 
 	return "", fmt.Errorf("file 'templar.yaml' not found in any parent directories")

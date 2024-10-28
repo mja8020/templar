@@ -11,12 +11,17 @@ type Tree struct {
 
 // Generate a tree from the root of the project
 // Return pointer in case we need future mutablility
-func NewTree() (t *Tree, err error) {
+func NewTree(starting string) (t *Tree, err error) {
 	var paths []string
 
 	t = &Tree{}
 
-	path, err := getRootDirectory()
+	starting, err = filepath.Abs(starting)
+	if err != nil {
+		return
+	}
+
+	path, err := getRootDirectory(starting)
 	if err != nil {
 		return
 	}
@@ -42,7 +47,10 @@ func recursePath(path string, paths *[]string) (err error) {
 
 	for _, e := range entries {
 		if e.IsDir() {
-			recursePath(filepath.Join(path, e.Name()), paths)
+			err = recursePath(filepath.Join(path, e.Name()), paths)
+			if err != nil {
+				return
+			}
 		}
 	}
 
