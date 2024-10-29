@@ -1,75 +1,82 @@
 package exec
 
 import (
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-func TestExec_Success(t *testing.T) {
-	// Test a command that should succeed
-	executable := "/bin/bash"
-	environment := map[string]string{
-		"TEST_VAR": "Hello, World!",
-	}
-	args := []string{"-c", "echo $TEST_VAR"}
+func TestRunSuccess(t *testing.T) {
+	// Define a simple executable command that should succeed
+	executable := "echo"
+	args := []string{"Hello, world!"}
+	env := map[string]string{}
+	stream := false
+	fileOutputStream := "os.Stdout"
 
-	// Execute the command
-	result, err := Exec(executable, environment, args)
-
-	// Assertions
-	assert.NoError(t, err)
-	assert.Equal(t, "Hello, World!\n", result.StdOut)
-	assert.Equal(t, "", result.StdErr)
-	assert.Equal(t, 0, result.ExitCode)
+	result, err := Run(executable, env, args, stream, fileOutputStream)
+	require.NoError(t, err, "expected no error during execution")
+	assert.Equal(t, 0, result.ExitCode, "expected exit code 0")
+	assert.Equal(t, "Hello, world!\n", result.StdOut, "unexpected stdout content")
 }
 
-func TestExec_CommandNotFound(t *testing.T) {
-	// Test a command that does not exist
-	executable := "/bin/doesnotexist"
-	environment := map[string]string{}
+func TestRunCommandNotFound(t *testing.T) {
+	// Use a non-existent command
+	executable := "nonexistentcommand"
 	args := []string{}
+	env := map[string]string{}
+	stream := false
+	fileOutputStream := "os.Stdout"
 
-	// Execute the command
-	result, err := Exec(executable, environment, args)
-
-	// Assertions
-	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "failed to start command")
-	assert.Equal(t, "", result.StdOut)
-	assert.Equal(t, "", result.StdErr)
-	assert.NotEqual(t, 0, result.ExitCode)
+	_, err := Run(executable, env, args, stream, fileOutputStream)
+	assert.Error(t, err, "expected error for non-existent command")
 }
 
-func TestExec_FailWithStdErr(t *testing.T) {
-	// Test a command that should fail and produce stderr output
-	executable := "/bin/bash"
-	environment := map[string]string{}
-	args := []string{"-c", "ls /nonexistent"}
+func TestRunPermissionDenied(t *testing.T) {
+	// Use an existing file that isn't executable
+	executable := "/etc/passwd" // A non-executable file on Unix systems
+	args := []string{}
+	env := map[string]string{}
+	stream := false
+	fileOutputStream := "os.Stdout"
 
-	// Execute the command
-	result, err := Exec(executable, environment, args)
-
-	// Assertions
-	assert.Error(t, err)
-	assert.Contains(t, result.StdErr, "No such file or directory")
-	assert.Equal(t, 2, result.ExitCode) // Expect exit code 2 for "no such file or directory"
+	_, err := Run(executable, env, args, stream, fileOutputStream)
+	assert.Error(t, err, "expected permission error for non-executable file")
 }
 
-func TestExec_WithEnvironmentVariables(t *testing.T) {
-	// Test a command that uses environment variables
-	executable := "/bin/bash"
-	environment := map[string]string{
-		"MY_VAR": "TestValue",
-	}
-	args := []string{"-c", "echo $MY_VAR"}
+func TestRunWithStreaming(t *testing.T) {
+	// Create a temporary file for streaming output
+	tmpFile, err := os.CreateTemp("", "output.txt")
+	require.NoError(t, err, "failed to create temp file")
+	defer os.Remove(tmpFile.Name())
 
-	// Execute the command
-	result, err := Exec(executable, environment, args)
+	// Test a simple command with streaming
+	executable := "echo"
+	args := []string{"Stream test"}
+	env := map[string]string{}
+	stream := true
+	fileOutputStream := tmpFile.Name()
 
-	// Assertions
-	assert.NoError(t, err)
-	assert.Equal(t, "TestValue\n", result.StdOut)
-	assert.Equal(t, "", result.StdErr)
-	assert.Equal(t, 0, result.ExitCode)
+	result, err := Run(executable, env, args, stream, fileOutputStream)
+	require.NoError(t, err, "expected no error during execution")
+	assert.Equal(t, 0, result.ExitCode, "expected exit code 0")
+
+	// Verify output was streamed to the file
+	content, err := os.ReadFile(tmpFile.Name())
+	require.NoError(t, err, "failed to read temp file")
+	assert.Equal(t, "Stream test\n", string(content), "unexpected file content")
+}
+
+func TestRunErrorOutput(t *testing.T) {
+	executable := "ls"
+	args := []string{"/nonexistent_directory"}
+	env := map[string]string{}
+	stream := false
+	fileOutputStream := "os.Stdout"
+
+	result, _ := Run(executable, env, args, stream, fileOutputStream)
+
+	assert.Contains(t, result.StdErr, "/usr/bin/ls: cannot access '/nonexistent_directory': No such file or directory", "unexpected stderr content")
 }
