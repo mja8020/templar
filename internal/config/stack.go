@@ -2,8 +2,10 @@ package config
 
 import "github.com/mja8020/templar/internal/tree"
 
-// Maybe workspace?
-type Config struct {
+// templar.yaml
+type Stack struct {
+	Common
+
 	// Entrypoint when running
 	Target string `yaml:"-"`
 	// Configuration root path
@@ -35,23 +37,23 @@ type Layer struct {
 	Match  string   `yaml:"match,omitempty"` // Determines which layer is selected?
 }
 
-func NewConfig(target string) (config Config, err error) {
-	config = Config{}
+func NewStack(target string) (stack Stack, err error) {
+	stack = Stack{}
 
-	config.RootConfig = "templar.yaml"
-	config.Folderconfig = ".templar.yaml"
-	config.TemplateFolder = ".templar"
+	stack.RootConfig = "templar.yaml"
+	stack.Folderconfig = ".templar.yaml"
+	stack.TemplateFolder = ".templar"
 
-	config.Target = target
-	config.Layers = []Layer{}
-	config.Variables = map[string]Variable{}
+	stack.Target = target
+	stack.Layers = []Layer{}
+	stack.Variables = map[string]Variable{}
 
-	err = config.buildTree()
+	err = stack.buildTree()
 	if err != nil {
 		return
 	}
 
-	err = config.buildFolders()
+	err = stack.buildFolders()
 	if err != nil {
 		return
 	}
@@ -59,7 +61,7 @@ func NewConfig(target string) (config Config, err error) {
 	return
 }
 
-func (c *Config) buildTree() (err error) {
+func (c *Stack) buildTree() (err error) {
 	c.Tree, err = tree.NewTree(c.Target)
 	if err != nil {
 		return
@@ -69,7 +71,7 @@ func (c *Config) buildTree() (err error) {
 	return
 }
 
-func (c *Config) buildFolders() (err error) {
+func (c *Stack) buildFolders() (err error) {
 	c.Folders = map[string]Folder{}
 
 	// Start traversing the tree, load the config, merge etc
