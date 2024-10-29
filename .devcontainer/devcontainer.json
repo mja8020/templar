@@ -10,8 +10,7 @@
                 "davidanson.vscode-markdownlint",
                 "ms-azuretools.vscode-docker", // Docker integration and linting
                 "vscode-icons-team.vscode-icons", // Better file extension icons
-                "redhat.vscode-yaml", // Kubernetes, Drone syntax highlighting
-                "github.copilot" // AI code completion
+                "redhat.vscode-yaml" // Kubernetes, Drone syntax highlighting
             ],
             "settings": {
                 "files.eol": "\n",
@@ -46,7 +45,8 @@
                 },
                 "remote.extensionKind": {
                     "ms-azuretools.vscode-docker": "workspace"
-                }
+                },
+                "dev.containers.copyGitConfig": true
             }
         }
     }

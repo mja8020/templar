@@ -6,12 +6,8 @@ import (
 	"path/filepath"
 )
 
-func getRootDirectory() (string, error) {
-	currentDir, err := os.Getwd()
-	if err != nil {
-		return "", fmt.Errorf("error getting current directory: %w", err)
-	}
-
+func getRootDirectory(path string) (string, error) {
+	currentDir := path
 	for {
 		filePath := filepath.Join(currentDir, "templar.yaml")
 
