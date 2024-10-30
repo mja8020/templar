@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	"github.com/Masterminds/sprig/v3"
 	"github.com/hairyhenderson/gomplate/v4"
@@ -26,7 +27,12 @@ func Render(template string, values map[string]interface{}, sources map[string]D
 	}
 
 	valuesPath, err := serializeValues(values)
-	valuesPath = filepath.ToSlash(valuesPath)
+	if runtime.GOOS == "windows" {
+		valuesPath, err = filepath.Localize(valuesPath)
+		if err != nil {
+			return
+		}
+	}
 	defer os.Remove(valuesPath)
 
 	contextValues, err := url.Parse(fmt.Sprintf("file://%s", valuesPath))
