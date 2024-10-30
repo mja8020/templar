@@ -24,10 +24,15 @@ var execCmd = &cobra.Command{
 	Short: "Execute a command with specified environment variables and arguments",
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		// Call the Exec function from internal/exec package
-		_, err := exec.Run(executable, envVars, args, stream, fileOutputStream)
+		result, err := exec.Run(executable, envVars, args, stream, fileOutputStream)
 		if err != nil {
 			return fmt.Errorf("execution failed: %w", err)
 		}
+
+		// Print the results
+		fmt.Printf("StdOut:\n%s\n", result.StdOut)
+		fmt.Printf("StdErr:\n%s\n", result.StdErr)
+		fmt.Printf("ExitCode: %d\n", result.ExitCode)
 
 		return nil
 	},

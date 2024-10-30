@@ -78,5 +78,5 @@ func TestRunErrorOutput(t *testing.T) {
 
 	result, _ := Run(executable, env, args, stream, fileOutputStream)
 
-	assert.Contains(t, result.StdErr, "/usr/bin/ls: cannot access '/nonexistent_directory': No such file or directory", "unexpected stderr content")
+	assert.Contains(t, result.StdErr, "No such file or directory", "unexpected stderr content")
 }

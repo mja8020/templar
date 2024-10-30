@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"runtime"
 	"strings"
 	"syscall"
 )
@@ -30,6 +29,7 @@ func isExecutable(path string) bool {
 func Run(executable string, environment map[string]string, args []string, stream bool, fileOutputStream string) (Execute, error) {
 	var result Execute
 
+	// Find execpath
 	execPath, err := exec.LookPath(executable)
 	if err != nil {
 		return result, fmt.Errorf("executable not found or not in PATH: %s", executable)
@@ -38,14 +38,8 @@ func Run(executable string, environment map[string]string, args []string, stream
 		return result, fmt.Errorf("executable is not permitted to run: %s", execPath)
 	}
 
-	// Create the command
-	var cmd *exec.Cmd
-	switch runtime.GOOS {
-	case "windows":
-		cmd = exec.Command("cmd", "/C", fmt.Sprintf("%s %s", execPath, strings.Join(args, " ")))
-	default: // Linux and macOS
-		cmd = exec.Command("/bin/bash", "-c", fmt.Sprintf("%s %s", execPath, strings.Join(args, " ")))
-	}
+	// Set up command
+	cmd := exec.Command(execPath, strings.Join(args, " "))
 
 	// Set up environment variables
 	env := os.Environ()
