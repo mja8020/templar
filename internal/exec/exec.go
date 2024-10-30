@@ -3,12 +3,11 @@ package exec
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"os/exec"
-	"strings"
 	"syscall"
 )
 
@@ -18,15 +17,7 @@ type Execute struct {
 	ExitCode int
 }
 
-func isExecutable(path string) bool {
-	info, err := os.Stat(path)
-	if err != nil {
-		return false
-	}
-	return info.Mode()&0o111 != 0 // Check for any executable bit
-}
-
-func Run(executable string, environment map[string]string, args []string, stream bool, fileOutputStream string) (Execute, error) {
+func Run(ctx context.Context, executable string, environment map[string]string, args []string, stream bool, fileOutputStream string) (Execute, error) {
 	var result Execute
 
 	// Find execpath
@@ -34,12 +25,9 @@ func Run(executable string, environment map[string]string, args []string, stream
 	if err != nil {
 		return result, fmt.Errorf("executable not found or not in PATH: %s", executable)
 	}
-	if !isExecutable(execPath) {
-		return result, fmt.Errorf("executable is not permitted to run: %s", execPath)
-	}
 
 	// Set up command
-	cmd := exec.Command(execPath, strings.Join(args, " "))
+	cmd := exec.CommandContext(ctx, execPath, args...)
 
 	// Set up environment variables
 	env := os.Environ()
@@ -49,14 +37,13 @@ func Run(executable string, environment map[string]string, args []string, stream
 	cmd.Env = env
 
 	var outputStream io.Writer
-	switch fileOutputStream {
-	case "os.Stdout":
+	if fileOutputStream == "os.Stdout" {
 		outputStream = os.Stdout
-	default:
+	} else {
 		// Assume it's a file path
 		file, err := os.Create(fileOutputStream)
 		if err != nil {
-			log.Fatalf("Failed to open file for output: %v", err)
+			return result, fmt.Errorf("failed to open file for output: %v", err)
 		}
 		defer file.Close()
 		outputStream = file

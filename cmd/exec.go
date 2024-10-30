@@ -4,7 +4,9 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"context"
 	"fmt"
+	"time"
 
 	"github.com/mja8020/templar/internal/exec"
 	"github.com/spf13/cobra"
@@ -23,8 +25,12 @@ var execCmd = &cobra.Command{
 	Use:   "execute",
 	Short: "Execute a command with specified environment variables and arguments",
 	RunE: func(cmd *cobra.Command, _ []string) error {
+		// Create a context with a timeout for the command
+		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+		defer cancel()
+
 		// Call the Exec function from internal/exec package
-		result, err := exec.Run(executable, envVars, args, stream, fileOutputStream)
+		result, err := exec.Run(ctx, executable, envVars, args, stream, fileOutputStream)
 		if err != nil {
 			return fmt.Errorf("execution failed: %w", err)
 		}
