@@ -22,6 +22,5 @@ func TestDisplay(t *testing.T) {
 	require.NoError(t, err)
 
 	display := tree.Display()
-	t.Log(display)
 	assert.Equal(t, expected, display)
 }

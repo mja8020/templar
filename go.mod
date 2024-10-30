@@ -6,6 +6,7 @@ go 1.23.2
 replace github.com/hairyhenderson/gomplate/v4 v4.1.0 => github.com/mja8020/gomplate/v4 v4.0.0
 
 require (
+	github.com/Masterminds/sprig/v3 v3.3.0
 	github.com/hairyhenderson/gomplate/v4 v4.1.0
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.9.0
@@ -29,7 +30,6 @@ require (
 	github.com/AzureAD/microsoft-authentication-library-for-go v1.2.2 // indirect
 	github.com/Masterminds/goutils v1.1.1 // indirect
 	github.com/Masterminds/semver/v3 v3.3.0 // indirect
-	github.com/Masterminds/sprig/v3 v3.3.0 // indirect
 	github.com/Microsoft/go-winio v0.6.2 // indirect
 	github.com/ProtonMail/go-crypto v1.0.0 // indirect
 	github.com/Shopify/ejson v1.5.2 // indirect
