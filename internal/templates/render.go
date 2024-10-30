@@ -28,10 +28,7 @@ func Render(template string, values map[string]interface{}, sources map[string]D
 
 	valuesPath, err := serializeValues(values)
 	if runtime.GOOS == "windows" {
-		valuesPath, err = filepath.Localize(valuesPath)
-		if err != nil {
-			return
-		}
+		valuesPath = "/" + filepath.ToSlash(valuesPath)
 	}
 	defer os.Remove(valuesPath)
 
