@@ -30,7 +30,7 @@ Folder
 type Node struct {
 	Name   string // Basename, empty when root
 	Path   string // Full filesystemn path
-	Label  string // Path relative to root minus leading .
+	Label  string // Path relative to root minus leading . (on windows use / for separator here)
 	Parent string // Label of the parent (string not reference to avoid circular dependencies)
 
 	children NodeSet
