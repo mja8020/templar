@@ -5,7 +5,7 @@ package tree
 // TODO: Print rendered variables alongside the paths in the tree once rendering is implemented
 
 func (t *Tree) Display() (display string) {
-	display = "\n" + t.root.Name + "\n" + displayNode(t.root, "")
+	display = "\n" + t.Root.Name + "\n" + displayNode(t.Root, "")
 	return
 }
 

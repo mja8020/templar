@@ -16,7 +16,7 @@ type Node struct {
 type Tree struct {
 	Size int
 
-	root *Node
+	Root *Node
 }
 
 func NewTree(path string) (t *Tree, err error) {
@@ -36,7 +36,7 @@ func NewTree(path string) (t *Tree, err error) {
 		return
 	}
 
-	t.root = root
+	t.Root = root
 	t.Size = count + 1 // include root in size
 
 	return
