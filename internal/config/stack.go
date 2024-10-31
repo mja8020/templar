@@ -1,10 +1,20 @@
 package config
 
-import "github.com/mja8020/templar/internal/tree"
+import (
+	"errors"
+	"os"
+	"path/filepath"
+
+	"github.com/mja8020/templar/internal/tree"
+	"github.com/mja8020/templar/internal/utils"
+	"gopkg.in/yaml.v3"
+)
 
 // templar.yaml
 type Stack struct {
 	Common
+
+	Name string `yaml:"name"`
 
 	// Entrypoint when running
 	Target string `yaml:"-"`
@@ -48,7 +58,12 @@ func NewStack(target string) (stack Stack, err error) {
 	stack.Layers = []Layer{}
 	stack.Variables = map[string]Variable{}
 
-	err = stack.buildTree()
+	err = stack.loadTree()
+	if err != nil {
+		return
+	}
+
+	err = stack.loadConfig()
 	if err != nil {
 		return
 	}
@@ -58,17 +73,42 @@ func NewStack(target string) (stack Stack, err error) {
 		return
 	}
 
+	err = stack.Validate()
+	if err != nil {
+		return
+	}
+
 	return
 }
 
-func (c *Stack) buildTree() (err error) {
+func (c *Stack) loadTree() (err error) {
 	c.Tree, err = tree.NewTree(c.Target)
 	if err != nil {
 		return
 	}
-	c.Root = c.Tree.Root.Name
+	c.Root = c.Tree.Root.Path
 
 	return
+}
+
+func (c *Stack) loadConfig() (err error) {
+	path := filepath.Join(c.Root, c.RootConfig)
+
+	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+		return nil
+	}
+
+	content, err := utils.FileRead(path)
+	if err != nil {
+		return nil
+	}
+
+	err = yaml.Unmarshal([]byte(content), &c)
+	if err != nil {
+		return nil
+	}
+
+	return nil
 }
 
 func (c *Stack) buildFolders() (err error) {
