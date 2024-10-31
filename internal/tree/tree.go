@@ -7,8 +7,31 @@ import (
 
 type NodeSet []*Node
 
+/*
+Traverse: "../../fixtures/1_basic" with a full path of "/workspaces/Templar/fixtures/1_basic"
+
+Root
+{
+	Name: ""
+	Label: "/"
+	Path: "/workspaces/Templar/fixtures/1_basic"
+	Parent: ""
+}
+
+Folder
+{
+	Name: "a"
+	Label: "/a"
+	Path: "/workspaces/Templar/fixtures/1_basic/a"
+	Parent: "/"
+}
+*/
+
 type Node struct {
-	Name string
+	Name   string // Basename, empty when root
+	Path   string // Full filesystemn path
+	Label  string // Path relative to root minus leading . (on windows use / for separator here)
+	Parent string // Label of the parent (string not reference to avoid circular dependencies)
 
 	children NodeSet
 }
@@ -27,11 +50,19 @@ func NewTree(path string) (t *Tree, err error) {
 		return
 	}
 
-	root := &Node{
-		Name: path,
+	path, err = filepath.Abs(path)
+	if err != nil {
+		return
 	}
 
-	count, err := recursePath(path, root)
+	root := &Node{
+		Name:   "",
+		Label:  "/",
+		Path:   path,
+		Parent: "",
+	}
+
+	count, err := recursePath(root)
 	if err != nil {
 		return
 	}
@@ -42,24 +73,32 @@ func NewTree(path string) (t *Tree, err error) {
 	return
 }
 
-func recursePath(path string, parent *Node) (count int, err error) {
-	entries, err := os.ReadDir(path)
+func recursePath(parent *Node) (count int, err error) {
+	entries, err := os.ReadDir(parent.Path)
 	if err != nil {
 		return
 	}
 
 	for _, e := range entries {
 		if e.IsDir() {
+			// Otherwise to have root as / every node would start with //
+			label := parent.Label + "/" + e.Name()
+			if parent.Label == "/" {
+				label = parent.Label + e.Name()
+			}
 
 			node := &Node{
-				Name: e.Name(),
+				Name:   e.Name(),
+				Path:   filepath.Join(parent.Path, e.Name()),
+				Label:  label,
+				Parent: parent.Label,
 			}
 
 			parent.children = append(parent.children, node)
 
 			var childCount int
 
-			childCount, err = recursePath(filepath.Join(path, e.Name()), node)
+			childCount, err = recursePath(node)
 			if err != nil {
 				return
 			}

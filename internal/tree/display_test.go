@@ -8,8 +8,9 @@ import (
 )
 
 func TestDisplay(t *testing.T) {
+	// Root has empty name so we have an empty leading line
 	expected := `
-../../fixtures/1_basic
+
 ├── a
 │   ├── b
 │   └── c
