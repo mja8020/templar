@@ -1,10 +1,14 @@
 package config
 
-import "github.com/mja8020/templar/internal/tree"
+import (
+	"github.com/mja8020/templar/internal/tree"
+)
 
 // templar.yaml
 type Stack struct {
 	Common
+
+	Name string `yaml:"name"`
 
 	// Entrypoint when running
 	Target string `yaml:"-"`
@@ -48,7 +52,12 @@ func NewStack(target string) (stack Stack, err error) {
 	stack.Layers = []Layer{}
 	stack.Variables = map[string]Variable{}
 
-	err = stack.buildTree()
+	err = stack.loadTree()
+	if err != nil {
+		return
+	}
+
+	err = stack.loadConfig()
 	if err != nil {
 		return
 	}
@@ -58,23 +67,10 @@ func NewStack(target string) (stack Stack, err error) {
 		return
 	}
 
-	return
-}
-
-func (c *Stack) buildTree() (err error) {
-	c.Tree, err = tree.NewTree(c.Target)
+	err = stack.Validate()
 	if err != nil {
 		return
 	}
-	c.Root = c.Tree.Root.Name
-
-	return
-}
-
-func (c *Stack) buildFolders() (err error) {
-	c.Folders = map[string]Folder{}
-
-	// Start traversing the tree, load the config, merge etc
 
 	return
 }
