@@ -2,12 +2,13 @@
 .ONESHELL:
 
 setup:
+	go install gotest.tools/gotestsum@latest
 	go install github.com/spf13/cobra-cli@latest
 	go mod download
 	go mod tidy
 
 test:
-	go test -v ./...
+	gotestsum --format testname --junitfile results.xml ./... -- -v
 
 # TODO: Inject commit/tag info
 build:
